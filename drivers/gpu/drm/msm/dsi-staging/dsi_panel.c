@@ -901,13 +901,6 @@ int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl)
 			panel->skip_dimmingon = STATE_NONE;
 	}
 
-	if (panel->last_esd_bl_lvl == 0 && bl_temp && panel->cphy_esd_check) {
-		schedule_delayed_work(&panel->esd_work, msecs_to_jiffies(300));
-	}
-
-	if (panel->cphy_esd_check)
-		panel->last_esd_bl_lvl = bl_temp;
-
 	if (bl_temp > 0 && panel->last_bl_lvl == 0) {
 		pr_info("crc off\n");
 		rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_SET_DISP_CRC_OFF);
@@ -1430,8 +1423,6 @@ static int dsi_panel_parse_misc_host_config(struct dsi_host_common_cfg *host,
 					"qcom,panel-cphy-mode");
 	host->phy_type = panel_cphy_mode ? DSI_PHY_TYPE_CPHY
 						: DSI_PHY_TYPE_DPHY;
-	host->cphy_strength = utils->read_bool(utils->data,
-					"qcom,mdss-dsi-cphy-strength");
 
 	return 0;
 }
@@ -3843,8 +3834,6 @@ static int dsi_panel_parse_mi_config(struct dsi_panel *panel,
 	} else {
 		pr_info("Panel on dimming delay %d ms\n", panel->panel_on_dimming_delay);
 	}
-	panel->cphy_esd_check = utils->read_bool(of_node,
-							"mi,cphy-esd-check");
 
 	INIT_DELAYED_WORK(&panel->cmds_work, panelon_dimming_enable_delayed_work);
 	INIT_DELAYED_WORK(&panel->fod_work, panelon_fod_enable_delayed_work);

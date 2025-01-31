@@ -2173,13 +2173,6 @@ static irqreturn_t esd_err_irq_handle(int irq, void *data)
 		return IRQ_HANDLED;
 	}
 
-	if (gpio_get_value(display->panel->esd_config.esd_err_irq_gpio) && display->panel->cphy_esd_check) {
-		SDE_ERROR("trigger esd by mistake,return\n");
-		return IRQ_HANDLED;
-	}
-
-	SDE_INFO("panel ESD irq trigging\n");
-
 	if (c_conn->connector_type == DRM_MODE_CONNECTOR_DSI) {
 		struct dsi_display * dsi_display = (struct dsi_display *)(c_conn->display);
 		if (dsi_display && dsi_display->panel) {
